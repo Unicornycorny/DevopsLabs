@@ -1,0 +1,9 @@
+- name: Generate client OVPN file
+  template:
+    src: "client-ovpn.j2"
+    dest: "/tmp/{{ openvpn_client_name }}.ovpn"
+- name: Fetch the client OVPN artifact
+  fetch:
+    src: "/tmp/{{ openvpn_client_name }}.ovpn"
+    dest: "{{ openvpn_artifact_dir }}/{{ openvpn_client_name }}.ovpn"
+    flat: yes

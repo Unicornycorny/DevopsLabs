@@ -1,0 +1,4 @@
+- name: openvpn
+  src: git@gitlab.com:devops9824703/openvpn.git
+  scm: git
+  version: main
