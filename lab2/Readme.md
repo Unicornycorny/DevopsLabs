@@ -25,7 +25,7 @@ vagrant status
 Current machine status:
 
 pg12                      running (virtualbox)
-pg14                      not created (virtualbox)
+pg14                      running (virtualbox)
 pg16                      running (virtualbox)
 ```
 
