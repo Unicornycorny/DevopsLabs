@@ -45,6 +45,7 @@ ansible [core 2.16.3]
   python version = 3.12.3 (main, Nov  6 2024, 18:32:19) [GCC 13.2.0] (/usr/bin/python3)
   jinja version = 3.1.2
   libyaml = True
+```
 ...
 - для лабораторной потребуется **docker-playbook.yml** и **inventory.ini**.
 **inventory.ini** - конфиг для группы хостов. <br>
