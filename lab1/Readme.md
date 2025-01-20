@@ -48,12 +48,12 @@ ansible [core 2.16.3]
 ```
 ...
 - для лабораторной потребуется **docker-playbook.yml** и **inventory.ini**.
-**inventory.ini** - конфиг для группы хостов. <br>
+**inventory.ini** - конфиг для группы хостов. 
 **docker-playbook.yml** - содержит список выполняемых задач на каждом из хостов, указанных в  *inventory.ini*.
-<br>
+
 ![alt text](image.png)
-<br>
-- при помощи <code>ansible all -i inventory.ini -m ping</code> пингуем наши машины, поднятые при помощи *vagrant* и ожидаем ответа **pong** от каждой из них. Для этого меянем права доступа к ключу в виртуалке.<br>
+
+- при помощи <code>ansible all -i inventory.ini -m ping</code> пингуем наши машины, поднятые при помощи *vagrant* и ожидаем ответа **pong** от каждой из них. Для этого меянем права доступа к ключу в виртуалке.
 ![alt text](image-2.png)
 ![alt text](image-1.png)
 - в случае успеха запускаем задачи из playbook для каждого хоста из .ini: <code>ansible-playbook -i inventory.ini docker-playbook.yml</code>, дожидаемся раската конфигов на машинах и ответа от сервера.
