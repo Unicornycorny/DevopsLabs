@@ -1,0 +1,10 @@
+roles: 
+ - name: labs
+   src: https://gitlab.com/devops9824703/labs.git
+   scm: git
+   version: main
+
+ - name: nginx-role
+   src: git+https://gitlab.com/devops9824703/nginx-role.git
+   scm: git
+   version: main

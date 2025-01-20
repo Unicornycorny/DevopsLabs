@@ -1,0 +1,5 @@
+roles: 
+ - name: labs
+   src: https://gitlab.com/devops9824703/labs.git
+   scm: git
+   version: main
