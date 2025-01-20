@@ -1,38 +1,75 @@
-Role Name
-=========
+# Лабораторная работа №4: Тестирование ролей Ansible с помощью Molecule
 
-A brief description of the role goes here.
+В данной работе необходимо написать Ansible-роль для поднятия **OpenVPN-сервера** и протестировать её с помощью **Molecule**. В конце будет использоваться итоговая роль через `ansible-galaxy`.
 
-Requirements
-------------
+---
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+## Цель работы
 
-Role Variables
---------------
+1. Научиться писать Molecule-тесты для Ansible-ролей.
+2. Научиться поднимать OpenVPN-сервер средствами Ansible.
+3. Получить артефактный `.ovpn`-файл для клиента.
+4. Подключать написанную роль через `requirements.yml` (ansible-galaxy).
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+---
 
-Dependencies
-------------
+## Рекомендуемая документация
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+- [Habr об OpenVPN](https://habr.com/ru/post/233971/)
+- [VPN: ещё раз просто о сложном](https://habr.com/ru/post/534250/)
+- [Урок из Школы DevOps: Тестирование ролей в Molecule (YouTube)](https://www.youtube.com/watch?v=0b3YXlffo1Q)
+- [Тестируем роли Ansible при помощи Molecule (Habr)](https://habr.com/ru/post/437216/)
 
-Example Playbook
-----------------
+---
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+## Предварительные требования
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+1. **Ansible** установлен (в WSL или Linux).
+2. **Molecule** установлен — желательно в виртуальном окружении (venv) или через `pipx`.
+   - Например:  
+     ```bash
+     python3 -m venv venv
+     source venv/bin/activate
+     pip install --upgrade pip
+     pip install molecule[docker]
+     ```
+     (или `molecule[vagrant]`, если хотите тестировать во Vagrant.)
+3. **Git** для управления репозиторием.
 
-License
--------
+---
 
-BSD
+## Ход работы
 
-Author Information
-------------------
+### Шаг 1. Создаём базовую структуру роли OpenVPN
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+1. Инициируем роль (рекомендуется отдельный репозиторий, например `openvpn-role`):
+   ```bash
+   ansible-galaxy init openvpn
+   ```
+
+   openvpn/
+├── defaults/
+├── handlers/
+├── meta/
+├── tasks/
+├── templates/
+├── tests/
+├── vars/
+└── ...
+
+```
+molecule init scenario --driver-name vagrant default
+```
+
+```
+ansible-galaxy install -r requirements.yml
+```
+
+![alt text](image.png)
+
+```
+ansible-playbook -i inventory.ini openvpn-playbook.yml
+```
+
+
+![alt text](image-1.png)
