@@ -46,7 +46,7 @@ ansible [core 2.16.3]
   jinja version = 3.1.2
   libyaml = True
 ...
-- для лабораторной потребуется **docker-playbook.yml** и **inventory.ini**. <br>
+- для лабораторной потребуется **docker-playbook.yml** и **inventory.ini**.
 **inventory.ini** - конфиг для группы хостов. <br>
 **docker-playbook.yml** - содержит список выполняемых задач на каждом из хостов, указанных в  *inventory.ini*.
 <br>
