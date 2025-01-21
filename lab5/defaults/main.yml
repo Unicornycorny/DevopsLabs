@@ -1,0 +1,31 @@
+postgres_version: 14
+postgres_pkg: "postgresql-{{ postgres_version }}"
+postgres_data_dir: "/var/lib/postgresql/{{ postgres_version }}/main"
+postgres_listen_addresses: "*"
+postgres_port: 5432
+
+# Список баз, которые нужно создать
+postgres_databases:
+  - name: myappdb
+    owner: myappuser
+    encoding: UTF8
+
+# Список пользователей
+postgres_users:
+  - name: myappuser
+    password: "secret"
+  - name: repuser
+    password: "repsupersecret"
+    replication: true  # признак, что этот юзер репликации
+
+# Включать ли репликацию (master/replica)
+postgres_replication: true
+postgres_role: "master"  # или "replica"
+postgres_master_host: "192.168.56.11"
+postgres_replica_host: "192.168.56.12"
+
+# Дополнительные настройки реплики
+postgres_wal_level: "replica"
+postgres_max_wal_senders: 5
+postgres_archive_mode: "off"
+postgres_archive_command: ""

@@ -1,0 +1,24 @@
+Vagrant.configure("2") do |config|
+
+  # Машина для приложения
+  config.vm.define "app" do |app|
+    app.vm.box = "ubuntu/jammy64"
+    app.vm.hostname = "app"
+    app.vm.network "private_network", ip: "192.168.56.10"
+  end
+
+  # Машина для СУБД (мастер)
+  config.vm.define "master" do |dbm|
+    dbm.vm.box = "ubuntu/jammy64"
+    dbm.vm.hostname = "dbmaster"
+    dbm.vm.network "private_network", ip: "192.168.56.11"
+  end
+
+  # Машина для СУБД (реплика)
+  config.vm.define "replica" do |dbr|
+    dbr.vm.box = "ubuntu/jammy64"
+    dbr.vm.hostname = "dbreplica"
+    dbr.vm.network "private_network", ip: "192.168.56.12"
+  end
+
+end

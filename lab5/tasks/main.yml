@@ -1,0 +1,84 @@
+---
+- name: import key postgresql
+  apt_key:
+    url: "{{ postgres_repo_key }}"
+    state: present
+
+- name: rep config
+  apt_repository:
+    repo: "{{ postgres_repo }}"
+    state: present
+    filename: "{{ postgres_repo_filename }}"
+
+- name: download packages Postgres
+  apt:
+    name: "{{ postgres_packages }}"
+    state: present
+    update_cache: yes
+
+- name: additional packages
+  apt:
+    name: "{{ postgres_support_packages }}"
+    state: present
+    update_cache: yes
+
+- name: check for dir PostgreSQL
+  file:
+    path: "{{ postgres_data_dir }}/main"
+    owner: postgres
+    group: postgres
+    state: directory
+    mode: 0700
+
+- name: check for init
+  stat:
+    path: "{{ postgres_data_dir }}/main/PG_VERSION"
+  register: pgdata_dir_version
+
+- name: init
+  become_user: postgres
+  command: "{{ postgres_data_dir }}/bin/initdb -D {{ postgres_data_dir }}/main"
+  when: not pgdata_dir_version.stat.exists
+
+- name: start and deploy
+  become: true
+  service:
+    name: postgresql.service
+    state: started
+    enabled: true
+
+- name: pg_hba.conf
+  template:
+    src: templates/pg_hba.conf.j2
+    dest: "{{ postgres_data_dir }}/main/pg_hba.conf"
+    owner: postgres
+    group: postgres
+    mode: 0600
+  notify: "Restart postgres"
+
+- name: Stop
+  service:
+    name: postgresql.service
+    state: stopped
+
+- name: dir synchronize
+  command: >
+    rsync -avz "{{ postgres_data_dir }}/" "{{ postgres_new_data_dir }}/"
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: postgresql.conf
+  lineinfile:
+    path: "{{ postgres_config_dir }}/postgresql.conf"
+    regexp: '^data_directory'
+    line: "data_directory = '{{ postgres_new_data_dir }}/{{ postgres_version }}/main'"
+
+- name: change dir
+  set_fact:
+    postgres_data_dir: "{{ postgres_new_data_dir }}/{{ postgres_version }}"
+
+- name: Launch postgres
+  service:
+    name: postgresql.service
+    state: started
+
+- include_tasks: "{{ postgres_role }}.yml"

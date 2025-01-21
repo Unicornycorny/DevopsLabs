@@ -1,0 +1,9 @@
+galaxy_info:
+  author: Unicorn
+  description: postgres-role
+  license: MIT
+  role_name: postgres-role
+  min_ansible_version: 2.1
+
+  galaxy_tags: []
+dependencies: []

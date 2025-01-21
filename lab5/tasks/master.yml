@@ -1,0 +1,88 @@
+---
+- name: Создаем бд
+  become: true
+  become_user: postgres
+  vars:
+    ansible_ssh_pipelining: true
+  postgresql_db:
+    name: "{{ item.name }}"
+    port: "{{ item.port | default(5432) }}"
+  with_items: "{{ postgres_databases }}"
+
+- name: Создаем юзеров
+  become: true
+  become_user: postgres
+  vars:
+    ansible_ssh_pipelining: true
+  postgresql_user:
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    encrypted: "{{ item.encrypted | default('true') }}"
+    role_attr_flags: "{{ item.role_attr_flags | default(omit) }}"
+    port: "{{ item.port | default(5432) }}"
+  with_items: "{{ postgres_users }}"
+
+- name: Грантим права
+  become: true
+  become_user: postgres
+  vars:
+    ansible_ssh_pipelining: true
+  postgresql_privs:
+    type: database
+    database: "{{ item.name }}"
+    roles: "{{ item.roles }}"
+    privs: "{{ item.privs | default(ALL) }}"
+  with_items: "{{ postgres_databases }}"
+
+- name: Разрешаем md5 соединения для всех юзеров
+  become: true
+  become_user: postgres
+  vars:
+    ansible_ssh_pipelining: true
+  postgresql_pg_hba:
+    dest: "{{ postgres_config_dir }}/pg_hba.conf"
+    contype: host
+    address: 0.0.0.0/0
+    databases: "{{ item.name }}"
+    method: "{{ postgres_users_hba_method }}"
+    users: "{{ item.roles }}"
+  with_items: "{{ postgres_databases }}"
+  notify: "Restart postgresl"
+
+- name: Обновляем pg_hba для мастера
+  postgresql_pg_hba:
+    dest: "{{ postgres_config_dir }}/pg_hba.conf"
+    contype: host
+    databases: replication
+    source: "{{ item }}/32"
+    method: "{{ postgres_replication_hba_method }}"
+    users: postgres
+  with_items: "{{ replica_address }}"
+
+- name: Обновляем postgresql.conf для мастера
+  blockinfile:
+    path: "{{ postgres_config_dir }}/postgresql.conf"
+    block: |
+      listen_addresses = 'localhost, {{ item }}'
+      wal_level = hot_standby
+      archive_mode = on
+      archive_command = 'cd .'
+      max_wal_senders = 8
+      hot_standby = on
+      port = 5432
+  with_items: "{{ postgres_master_address }}"
+
+- name: Обновляем пароль для юзера
+  become: true
+  become_user: postgres
+  vars:
+    ansible_ssh_pipelining: true
+  postgresql_user:
+    name: postgres
+    password: "{{ postgres_password }}"
+  notify: "Restart postgres"
+
+- name: Запускаем postgres
+  service: 
+    name: postgresql.service
+    state: started
