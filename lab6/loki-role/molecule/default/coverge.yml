@@ -1,0 +1,8 @@
+
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include Loki"
+      include_role:
+        name: "loki"

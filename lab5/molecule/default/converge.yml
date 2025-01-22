@@ -1,0 +1,20 @@
+---
+- name: Setup Master
+  hosts: master
+  become: true
+  tasks:
+    - name: "Include postgres"
+      include_role:
+        name: "postgres"
+      vars:
+        postgres_role: master
+
+- name: Setup Replica
+  hosts: replica
+  become: true
+  tasks:
+    - name: "Include postgres"
+      include_role:
+        name: "postgres"
+      vars:
+        postgres_role: replica
