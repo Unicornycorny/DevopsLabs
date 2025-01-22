@@ -1,38 +1,58 @@
-Role Name
-=========
+## **Ход работы**
 
-A brief description of the role goes here.
+1. Написать Ansible Playbook поднимающий OpenVPN сервер
+2. Через Molecule инициировать структуру для роли и вынести задачи поднятия сервера, с конфигурацией через переменные
+3. При завершении работы плейбук должен разместить в playbook-dir артефактный ovpn-файл для подключения
+4. Роль должна проходить стандартные тестами molecule test
+5. Плейбук подключает роль через ansible-galaxy
 
-Requirements
-------------
+- Поднимаем машины:
+```
+vagrant up
+vagrant status
+```
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- Инициализируем роль:
+```
+ansible-galaxy init postgresql-role
+```
+- Заполняем плейбук и переменные
 
-Role Variables
---------------
+```
+---
+- name: Setup Master
+  hosts: master
+  become: true
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+  tasks:
+    - name: "Include pgsql for master role"
+      include_role:
+        name: postgres
+      vars:
+        postgres_role: master
 
-Dependencies
-------------
+- name: Setup Replica
+  hosts: replica
+  become: true
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+  tasks:
+    - name: "Include pgsql for replica role"
+      include_role:
+        name: postgres
+      vars:
+        postgres_role: replica
+```
 
-Example Playbook
-----------------
+- Заполяем postgres(пишем tasks, templates etc)
+- Создаём molescule сценарий:
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+```
+molecule init scenario --driver-name docker default
+```
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+- Запускаем роль:
 
-License
--------
+```
+ansible-playbook -i hosts.ini site.yml
 
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+```
