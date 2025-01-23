@@ -25,6 +25,8 @@ molecule init scenario --driver-name docker default
 molecule test
 ```
 
+![alt text](image.png)
+
 - Запускаем после заполнения всех плейбуков:
 
 ```
