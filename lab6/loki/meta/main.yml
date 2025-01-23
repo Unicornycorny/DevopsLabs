@@ -1,6 +1,8 @@
 galaxy_info:
   author: Unicorn
   description: loki role
+  role_name: "loki"
+  namespace: itmo
 
 
   license: BSD

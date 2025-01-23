@@ -3,6 +3,5 @@
   become: true
   systemd:
     name: "{{ loki_service.name }}"
+    enabled: yes
     state: started
-    enabled: "{{ loki_service.enabled }}"
-    daemon_reload: "{{ loki_service.daemon_reload }}"

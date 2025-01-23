@@ -1,0 +1,17 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: instance
+    image: geerlingguy/docker-ubuntu2004-ansible:latest
+    pre_build_image: true
+    command: /lib/systemd/systemd  # Запускать systemd в качестве PID 1
+    privileged: true               # Контейнер должен быть привилегированным
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+provisioner:
+  name: ansible
+verifier:
+  name: ansible

@@ -1,0 +1,56 @@
+---
+- name: "Loki | Update packages"
+  become: true
+  apt:
+    name: "{{ loki_additional_pkg }}"
+    update_cache: yes
+
+# Включаем run_as_service.yml раньше, чтобы создать группу и пользователя
+- include_tasks: run_as_service.yml
+
+- name: "Loki | Create directories"
+  become: true
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ loki_user.name }}"
+    group: "{{ loki_group }}"
+  loop:
+    - "{{ loki_temp_dir }}"
+    - "{{ loki_etc_dir }}"
+    - "{{ loki_bin.dir }}"  # Добавляем каталог для бинарника, если его нет
+
+- name: "Loki | Download pre-compiled binary and unarchive it"
+  become: true
+  unarchive:
+    src: "{{ loki_bin.url }}"
+    dest: "{{ loki_temp_dir }}"
+    remote_src: true
+    creates: "{{ loki_temp_dir }}/{{ loki_bin.file }}"
+
+- name: "Loki | Download config file"
+  become: true
+  get_url:
+    url: "{{ loki_config.url }}"
+    dest: "{{ loki_etc_dir }}/{{ loki_config.file }}"
+    mode: '0440'
+    checksum: "{{ loki_config.checksum | default(None) }}"  # Опционально: добавьте контрольную сумму
+
+- name: "Loki | Ensure Loki binary has correct ownership and permissions"
+  become: true
+  file:
+    path: "{{ loki_bin.dir }}/{{ loki_bin.file }}"
+    state: file
+    owner: "{{ loki_user.name }}"
+    group: "{{ loki_group }}"
+    mode: '0755'
+
+- name: "Loki | Ensure Loki config file has correct ownership and permissions"
+  become: true
+  file:
+    path: "{{ loki_etc_dir }}/{{ loki_config.file }}"
+    state: file
+    owner: "{{ loki_user.name }}"
+    group: "{{ loki_group }}"
+    mode: '0440'
