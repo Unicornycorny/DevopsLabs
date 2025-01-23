@@ -63,6 +63,7 @@ Starting galaxy role install process
 - docker-role (main) was installed successfully
 ```
 ![alt text](image.png)
+![alt text](image-1.png)
 
 - Добавляем роль в *docker-playbook.yml* (roles) и запускаем
 ```bash
