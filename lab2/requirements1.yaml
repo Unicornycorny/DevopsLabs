@@ -1,0 +1,4 @@
+roles:
+  - name: postgres
+    src: git+https://gitlab.com/devops9824703/postgres-role.git
+    version: main

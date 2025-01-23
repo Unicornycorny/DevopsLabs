@@ -20,9 +20,8 @@
 vagrant status
 Current machine states:
 
-pg12                      running (virtualbox)
-pg14                      running (virtualbox)
-pg16                      running (virtualbox)
+srv1                      running (virtualbox)
+srv2                      running (virtualbox)
 
 ```
 (не забываем установить virtualbox для работы vagrant) 

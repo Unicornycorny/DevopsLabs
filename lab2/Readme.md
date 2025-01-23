@@ -24,9 +24,8 @@ vagrant status
 ```
 Current machine status:
 
-pg12                      running (virtualbox)
-pg14                      running (virtualbox)
-pg16                      running (virtualbox)
+srv1                      running (virtualbox)
+srv2                      running (virtualbox)
 ```
 
 ### **Ansible**
@@ -56,7 +55,7 @@ ansible-galaxy init docker
 - Прописываем в нем имя роли, ссылку на репу с ролью, указываем *main* в качестве src.
 - в WSL прописываем 
 ```bash
-ansible-galaxy install -r requirements.yml
+ansible-galaxy install -r requirements1.yaml
 ```
 ```
 Starting galaxy role install process
@@ -67,6 +66,6 @@ Starting galaxy role install process
 
 - Добавляем роль в *docker-playbook.yml* (roles) и запускаем
 ```bash
-ansible-playbook -i inventory.ini docker-playbook.yml
+ansible-playbook -i inventory.ini lab2playbook.yml
 ```
 
