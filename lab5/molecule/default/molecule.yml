@@ -2,7 +2,7 @@
 dependency:
   name: galaxy
 driver:
-  name: vagrant
+  name: docker
   use_host_address: true
 platforms:
   - name: _master

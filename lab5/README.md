@@ -1,44 +1,38 @@
-## README для роли postgres
+Role Name
+=========
 
-### postgres Role
+A brief description of the role goes here.
 
-An Ansible role for installing and configuring postgresql on a Linux server, creating databases and users, and managing
-access controls.
+Requirements
+------------
 
-### Requirements
+Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
 
-• Ansible 2.9+ is required.
+Role Variables
+--------------
 
-• Target system must be Ubuntu or Debian.
+A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
 
-### Role Variables
+Dependencies
+------------
 
-| Variable                        | Default Value                                                                               |
-|---------------------------------|---------------------------------------------------------------------------------------------|
-| postgres_version                | 15                                                                                          |
-| postgres_support_packages       | - gnupg   - python3-psycopg2                                                                |
-| postgres_packages               | - "postgresql-{{ postgres_version }}" - "postgresql-contrib-{{ postgres_version }}"         |
-| postgres_repo_key               | https://www.postgresql.org/media/keys/ACCC4CF8.asc                                          |
-| postgres_repo                   | "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main" |
-| postgres_repo_filename          | pgdg                                                                                        |
-| postgres_password               | pw                                                                                          |
-| postgres_data_dir               | "/var/lib/postgresql/{{ postgres_version }}"                                                |
-| postgres_config_dir             | "/etc/postgresql/{{ postgres_version }}/main"                                               |
-| postgres_new_data_dir           | /tmp/postgresql                                                                             |
-| postgres_users_hba_method       | md5                                                                                         |
-| postgres_replication_hba_method | md5                                                                                         |
-| postgres_users                  | name: jusmad  password: jusmad encrypted: true role_attr_flags: SUPERUSER port: 5432        |
-| postgres_databases              | name: just_mad_db   port: 5432  roles: jusmad  privs: ALL                                   |
-| postgres_master_address         | 192.168.56.201                                                                              |
-| postgres_replica_address:       | 192.168.56.202                                                                              |
+A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
 
+Example Playbook
+----------------
 
-### Templates
+Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
-This role includes templates:
+    - hosts: servers
+      roles:
+         - { role: username.rolename, x: 42 }
 
-- pg_hba.conf.j2 - Client authentication configuration file.
+License
+-------
 
-### Dependencies
+BSD
 
-This role has no dependencies on other roles.
+Author Information
+------------------
+
+An optional section for the role authors to include contact information, or a website (HTML is not allowed).

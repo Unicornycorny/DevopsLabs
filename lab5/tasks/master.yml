@@ -1,4 +1,9 @@
 ---
+- name: Запускаем postgres
+  service: 
+    name: postgresql.service
+    state: started
+
 - name: Создаем бд
   become: true
   become_user: postgres
@@ -47,9 +52,10 @@
     method: "{{ postgres_users_hba_method }}"
     users: "{{ item.roles }}"
   with_items: "{{ postgres_databases }}"
-  notify: "Restart postgresl"
+  notify: "Restart postgres"
 
 - name: Обновляем pg_hba для мастера
+  notify: "Restart postgres"
   postgresql_pg_hba:
     dest: "{{ postgres_config_dir }}/pg_hba.conf"
     contype: host
@@ -62,6 +68,7 @@
 - name: Обновляем postgresql.conf для мастера
   blockinfile:
     path: "{{ postgres_config_dir }}/postgresql.conf"
+    notify: "Restart postgres"
     block: |
       listen_addresses = 'localhost, {{ item }}'
       wal_level = hot_standby
@@ -81,8 +88,3 @@
     name: postgres
     password: "{{ postgres_password }}"
   notify: "Restart postgres"
-
-- name: Запускаем postgres
-  service: 
-    name: postgresql.service
-    state: started

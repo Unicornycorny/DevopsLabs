@@ -23,16 +23,16 @@ postgres_users_hba_method: md5
 postgres_replication_hba_method: md5
 
 postgres_users:
-  - name: jusmad
-    password: jusmad
+  - name: unicorn
+    password: unicorn
     encrypted: true
     role_attr_flags: SUPERUSER
     port: 5432
 
 postgres_databases:
-  - name: just_mad_db
+  - name: unicorn_db
     port: 5432
-    roles: jusmad
+    roles: unicorn
     privs: ALL
 
 postgres_master_address:

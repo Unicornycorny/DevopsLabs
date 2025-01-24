@@ -3,7 +3,7 @@
   hosts: master
   become: true
   tasks:
-    - name: "Include postgres"
+    - name: "Include postgresql"
       include_role:
         name: "postgres"
       vars:
@@ -15,6 +15,6 @@
   tasks:
     - name: "Include postgres"
       include_role:
-        name: "postgres"
+        name: "postgresql"
       vars:
         postgres_role: replica

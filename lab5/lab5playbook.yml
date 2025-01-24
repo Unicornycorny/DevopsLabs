@@ -3,7 +3,7 @@
   hosts: srv1
   become: true
   become_user: root
-  gather_facts: no
+  gather_facts: yes
 
   tasks:
     - name: Подключаем таски postgres для мастер

@@ -1,9 +1,14 @@
 galaxy_info:
-  author: jusmad
-  description: postgres role
-  namespace: jusmad
-  role_name: postgres
-  license: MIT
+  author: Unicorn
+  description: postgre role
+  company: itmo
+  role_name: postgresql
+  namespace: itmo
+
+  license: BSD
+
   min_ansible_version: 2.1
+
   galaxy_tags: []
 dependencies: []
+
