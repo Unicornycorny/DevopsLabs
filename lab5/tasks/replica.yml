@@ -1,10 +1,10 @@
 ---
-- name: stop postgres
+- name: Останавливаем postgres
   service: 
     name: postgresql.service
     state: stopped
 
-- name: delete main
+- name: Удаляем main
   become: true
   become_user: postgres
   vars:
@@ -13,7 +13,7 @@
     path: "{{ postgres_data_dir }}/main"
     state: absent
 
-- name: create new main
+- name: Пересоздаем main с новыми правами
   become: true
   become_user: postgres
   vars:
@@ -23,7 +23,7 @@
     state: directory
     mode: go-rwx
 
-- name: backup
+- name: Делаем бекап
   become: true
   become_user: postgres
   vars:

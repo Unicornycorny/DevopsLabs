@@ -1,31 +1,41 @@
-postgres_version: 14
-postgres_pkg: "postgresql-{{ postgres_version }}"
-postgres_data_dir: "/var/lib/postgresql/{{ postgres_version }}/main"
-postgres_listen_addresses: "*"
-postgres_port: 5432
+---
+postgres_version: 15
 
-# Список баз, которые нужно создать
-postgres_databases:
-  - name: myappdb
-    owner: myappuser
-    encoding: UTF8
+postgres_packages:
+  - "postgresql-{{ postgres_version }}"
+  - "postgresql-contrib-{{ postgres_version }}"
 
-# Список пользователей
+postgres_support_packages:
+  - gnupg
+  - python3-psycopg2
+
+postgres_repo_key: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+postgres_repo: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main"
+postgres_repo_filename: pgdg
+
+postgres_password: pw
+
+postgres_data_dir: "/var/lib/postgresql/{{ postgres_version }}"
+postgres_config_dir: "/etc/postgresql/{{ postgres_version }}/main"
+postgres_new_data_dir: /tmp/postgresql
+
+postgres_users_hba_method: md5
+postgres_replication_hba_method: md5
+
 postgres_users:
-  - name: myappuser
-    password: "secret"
-  - name: repuser
-    password: "repsupersecret"
-    replication: true  # признак, что этот юзер репликации
+  - name: jusmad
+    password: jusmad
+    encrypted: true
+    role_attr_flags: SUPERUSER
+    port: 5432
 
-# Включать ли репликацию (master/replica)
-postgres_replication: true
-postgres_role: "master"  # или "replica"
-postgres_master_host: "192.168.56.11"
-postgres_replica_host: "192.168.56.12"
+postgres_databases:
+  - name: just_mad_db
+    port: 5432
+    roles: jusmad
+    privs: ALL
 
-# Дополнительные настройки реплики
-postgres_wal_level: "replica"
-postgres_max_wal_senders: 5
-postgres_archive_mode: "off"
-postgres_archive_command: ""
+postgres_master_address:
+  - 192.168.56.201
+postgres_replica_address:
+  - 192.168.56.202

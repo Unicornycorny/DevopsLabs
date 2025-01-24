@@ -1,0 +1,25 @@
+---
+- name: Устанавливаем мастер
+  hosts: srv1
+  become: true
+  become_user: root
+  gather_facts: no
+
+  tasks:
+    - name: Подключаем таски postgres для мастер
+      include_role:
+        name: postgresql
+      vars:
+        postgres_role: master
+
+- name: Устанавлиаем реплику
+  hosts: srv2
+  become: true
+  become_user: root
+
+  tasks:
+    - name: Подключаем таски postgres для реплики
+      include_role:
+        name: postgresql
+      vars:
+        postgres_role: replica

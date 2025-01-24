@@ -1,28 +1,28 @@
 ---
-- name: import key postgresql
+- name: Импортируем gpg ключ postgresql
   apt_key:
     url: "{{ postgres_repo_key }}"
     state: present
 
-- name: rep config
+- name: Создаем файл конфигурации репозитория
   apt_repository:
     repo: "{{ postgres_repo }}"
     state: present
     filename: "{{ postgres_repo_filename }}"
 
-- name: download packages Postgres
+- name: Устанавливаем пакеты Postgres
   apt:
     name: "{{ postgres_packages }}"
     state: present
     update_cache: yes
 
-- name: additional packages
+- name: Утанавливаем доп пакеты
   apt:
     name: "{{ postgres_support_packages }}"
     state: present
     update_cache: yes
 
-- name: check for dir PostgreSQL
+- name: Проверяем, существует ли директора PostgreSQL
   file:
     path: "{{ postgres_data_dir }}/main"
     owner: postgres
@@ -30,24 +30,24 @@
     state: directory
     mode: 0700
 
-- name: check for init
+- name: Проверяем, инициализирован ли PostgreSQL
   stat:
     path: "{{ postgres_data_dir }}/main/PG_VERSION"
   register: pgdata_dir_version
 
-- name: init
+- name: Инициализируем если нет
   become_user: postgres
   command: "{{ postgres_data_dir }}/bin/initdb -D {{ postgres_data_dir }}/main"
   when: not pgdata_dir_version.stat.exists
 
-- name: start and deploy
+- name: Запускаем и включаем
   become: true
   service:
     name: postgresql.service
     state: started
     enabled: true
 
-- name: pg_hba.conf
+- name: Настраиваем pg_hba.conf
   template:
     src: templates/pg_hba.conf.j2
     dest: "{{ postgres_data_dir }}/main/pg_hba.conf"
@@ -56,27 +56,27 @@
     mode: 0600
   notify: "Restart postgres"
 
-- name: Stop
+- name: Останавливаем PostgreSQL
   service:
     name: postgresql.service
     state: stopped
 
-- name: dir synchronize
+- name: Синхронизируем директории
   command: >
     rsync -avz "{{ postgres_data_dir }}/" "{{ postgres_new_data_dir }}/"
   delegate_to: "{{ inventory_hostname }}"
 
-- name: postgresql.conf
+- name: Настраиваем postgresql.conf
   lineinfile:
     path: "{{ postgres_config_dir }}/postgresql.conf"
     regexp: '^data_directory'
     line: "data_directory = '{{ postgres_new_data_dir }}/{{ postgres_version }}/main'"
 
-- name: change dir
+- name: Меняем директорию данных
   set_fact:
     postgres_data_dir: "{{ postgres_new_data_dir }}/{{ postgres_version }}"
 
-- name: Launch postgres
+- name: Запускаем postgres
   service:
     name: postgresql.service
     state: started

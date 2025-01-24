@@ -40,7 +40,6 @@
 
 ## Ход работы
 
-### Шаг 1. Создаём базовую структуру роли OpenVPN
 
 1. Инициируем роль (рекомендуется отдельный репозиторий, например `openvpn-role`):
    ```bash
@@ -58,18 +57,23 @@
 └── ...
 
 ```
-molecule init scenario --driver-name vagrant default
+molecule init scenario --driver-name docker default
 ```
 
 ```
-ansible-galaxy install -r requirements.yml
+ansible-galaxy install -r requirements4.yml
 ```
 
 ![alt text](image.png)
 
 ```
-ansible-playbook -i inventory.ini openvpn-playbook.yml
+ansible-playbook -i inventory.ini lab4playbook.yml
 ```
 
-
 ![alt text](image-1.png)
+
+```
+molecule test
+```
+
+![alt text](image-2.png)
