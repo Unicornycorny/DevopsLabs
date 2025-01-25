@@ -1,0 +1,22 @@
+---
+driver:
+  name: docker
+
+provisioner:
+  name: ansible
+  playbooks:
+      cleanup: cleanup.yml
+
+verifier:
+  name: ansible
+  
+dependency:
+  name: galaxy
+  options:
+    ignore-certs: True
+    ignore-errors: True
+    role-file: requirements4.yml
+
+platforms:
+  - name: srv1
+    box: ubuntu/focal64

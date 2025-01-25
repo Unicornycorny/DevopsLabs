@@ -1,0 +1,14 @@
+client
+dev tun
+proto {{ openvpn_protocol }}
+remote {{ openvpn_network }} {{ openvpn_port }}
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+
+ca ca.crt
+cert client.crt
+key client.key
+tls-auth ta.key 1
+cipher {{ openvpn_cipher }}

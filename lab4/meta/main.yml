@@ -1,0 +1,16 @@
+galaxy_info:
+  author: Unicorn
+  description: openvpn role
+  company: itmo
+  role-name: "openvpn-role"
+  namespace: itmo
+
+  license: MIT
+
+  min_ansible_version: 2.1
+
+
+  galaxy_tags: []
+
+dependencies: []
+

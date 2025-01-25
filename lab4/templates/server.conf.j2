@@ -1,0 +1,21 @@
+port {{ openvpn_port }}
+proto {{ openvpn_protocol }}
+dev tun
+
+server {{ openvpn_network }} {{ openvpn_netmask }}
+ifconfig-pool-persist ipp.txt
+
+push "route {{ openvpn_network }} {{ openvpn_netmask }}"
+
+keepalive {{ openvpn_keepalive }}
+
+ca /etc/openvpn/ca.crt
+cert /etc/openvpn/server.crt
+key /etc/openvpn/server.key
+dh /etc/openvpn/dh.pem
+tls-auth /etc/openvpn/ta.key 0
+cipher {{ openvpn_cipher }}
+user {{ openvpn_user }}
+group {{ openvpn_group }}
+persist-key
+persist-tun

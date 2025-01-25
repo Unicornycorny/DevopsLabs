@@ -1,0 +1,133 @@
+---
+- name: Обновляем кеш
+  apt:
+    update_cache: yes
+
+- name: Утанавливаем openvpn и easy-rsa
+  apt:
+    name:
+      - openvpn
+      - easy-rsa
+    state: present
+
+- name: Проверяем наличие папки Easy-RSA
+  block:
+    - name: Проверяем наличие папки
+      stat:
+        path: "{{ easy_rsa_path }}"
+      register: easy_rsa_exists
+
+    - name: Создаем, если не нашли
+      command: make-cadir "{{ easy_rsa_path }}"
+      become_user: vagrant
+      when: not easy_rsa_exists.stat.exists
+
+- name: Проверяем наличие папки PKI
+  block:
+    - name: Проверяем наличие папки
+      stat:
+        path: /home/vagrant/easy-rsa/pki
+      register: pki_exists
+
+    - name: Создаем, если не существует
+      command: ./easyrsa init-pki
+      args:
+        chdir: "{{ easy_rsa_path }}"
+      become_user: vagrant
+      when: not pki_exists.stat.exists
+
+- name: Создаем CA и сервер сертификаты
+  block:
+    - name: Проверяем наличие CA
+      stat:
+        path: "{{ easy_rsa_pki_path }}/ca.crt"
+      register: ca_cert
+
+    - name: Проверяем наличие серверного
+      stat:
+        path: "{{ easy_rsa_pki_path }}/issued/server.crt"
+      register: server_cert
+
+    - name: Проверяем наличие приватника
+      stat:
+        path: "{{ easy_rsa_pki_path }}/private/server.key"
+      register: server_key
+
+    - name: Проверяем наличие параметров Diffie-Hellman
+      stat:
+        path: "{{ easy_rsa_pki_path }}/dh.pem"
+      register: dh_params
+
+    - name: Проверяем наличие TLS key
+      stat:
+        path: "{{ easy_rsa_pki_path }}/ta.key"
+      register: tls_key
+
+    - name: Создаем CA без пароля, если не существует
+      shell: echo "openvpn_ca" | ./easyrsa build-ca nopass
+      args:
+        chdir: "{{  easy_rsa_path  }}"
+      become_user: vagrant
+      when: not ca_cert.stat.exists
+
+    - name: Создаем серверный без пароля, если не существует
+      shell: echo "openvpn_server" | ./easyrsa gen-req server nopass
+      args:
+        chdir: "{{ easy_rsa_path }}"
+      become_user: vagrant
+      when: not server_cert.stat.exists
+
+    - name: Подписываем серверный, если не нашли
+      shell: echo "yes" | ./easyrsa sign-req server server
+      args:
+        chdir: "{{ easy_rsa_path }}"
+      become_user: vagrant
+      when: not server_cert.stat.exists
+
+    - name: Генерируем Diffie-Hellman параметры, если не нашли
+      command: ./easyrsa gen-dh
+      args:
+        chdir: "{{ easy_rsa_path }}"
+      become_user: vagrant
+      when: not dh_params.stat.exists
+
+    - name: Генерируем TLS ключ
+      command: openvpn --genkey --secret pki/ta.key
+      args:
+        chdir: "{{ easy_rsa_path }}"
+      become_user: vagrant
+      when: not tls_key.stat.exists
+
+- name: Проверяем наличие openvpn
+  file:
+    path: /etc/openvpn
+    state: directory
+    mode: '0755'
+
+- name: Копируем все необходимые файлы в openvpn
+  copy:
+    src: "{{ item }}"
+    dest: "{{ openvpn_config_path }}/"
+    remote_src: yes
+  with_items:
+    - "{{ easy_rsa_pki_path }}/ca.crt"
+    - "{{ easy_rsa_pki_path }}/issued/server.crt"
+    - "{{ easy_rsa_pki_path }}/private/server.key"
+    - "{{ easy_rsa_pki_path }}/dh.pem"
+    - "{{ easy_rsa_pki_path }}/ta.key"
+
+- name: Применяем серверный openvpn конфиг
+  template:
+    src: "{{ openvpn_server_config_name }}"
+    dest: /etc/openvpn/server.conf
+
+- name: Запускаем openvpn сервер
+  systemd:
+    name: openvpn@server
+    state: started
+    enabled: yes
+
+- name: Создаем конфиг для клиента
+  template:
+    src: "{{ openvpn_client_config_name }}"
+    dest: "client.ovpn"
